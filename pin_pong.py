@@ -1,4 +1,5 @@
 from pygame import *
+font.init()
 
 window = display.set_mode((600,600))
 display.set_caption('ping-pong')
@@ -39,13 +40,24 @@ FPS = 60
 # задний фон игры
 background = transform.scale(image.load('artacktida2.jpeg'), (600, 600))
 
+# текст
+font = font.Font(None, 50)
+lose1 = font.render('PLAYER_L LOSE!', True, (180,0,0))
+lose2 = font.render('PLAYER_R LOSE!', True, (180,0,0))
+
 # игроки
 player_l = Player('pin3.png', 20, 300, 120, 120, 10)
 player_r = Player('test2.png', 460, 300, 120, 120, 10)
+ball = Player('ball.png', 300, 300, 90, 90, 8)
 
 # игровой цикл
 run = True
 finish = False
+
+speed_x = 3
+speed_y = 3
+
+win_height = 600
 
 while run:
     for e in event.get():
@@ -60,7 +72,26 @@ while run:
         player_l.update_l()
 
         player_r.reset()
-        player_r.update_r()        
+        player_r.update_r()  
+
+        ball.reset()      
+
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+
+        if ball.rect.y > win_height - 50 or ball.rect.y < 0:
+            speed_y *= -1
+
+        if sprite.collide_rect(player_l, ball) or sprite.collide_rect(player_r, ball):
+            speed_x *= -1
+
+        if ball.rect.x < 0:
+            finish = True
+            window.blit(lose1, (250,300))
+
+        if ball.rect.x > 595:
+            finish = True
+            window.blit(lose2, (250,300))
 
         display.update()
 
